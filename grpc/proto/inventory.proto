@@ -1,0 +1,27 @@
+// Inventory service contract (gRPC version).
+// This file is the single source of truth: both the Inventory server and the
+// Order client use code generated from it.
+syntax = "proto3";
+
+package inventory;
+
+service Inventory {
+  // Checks whether the requested item and quantity are available.
+  // Errors are returned as gRPC status codes:
+  //   INVALID_ARGUMENT    - item_id empty or quantity <= 0
+  //   NOT_FOUND           - item_id does not exist
+  //   FAILED_PRECONDITION - item exists but not enough stock
+  rpc CheckAvailability (CheckRequest) returns (CheckResponse);
+}
+
+message CheckRequest {
+  string item_id = 1;
+  int32 quantity = 2;
+}
+
+message CheckResponse {
+  bool available = 1;
+  string item_id = 2;
+  int32 requested = 3;
+  int32 in_stock = 4;
+}

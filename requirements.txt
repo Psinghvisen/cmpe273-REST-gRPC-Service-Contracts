@@ -1,0 +1,4 @@
+flask>=3.0
+requests>=2.31
+grpcio>=1.60
+grpcio-tools>=1.60
