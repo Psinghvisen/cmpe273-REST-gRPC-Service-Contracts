@@ -173,6 +173,26 @@ Inventory gRPC server log (request ID propagated via gRPC metadata):
 
 ![gRPC success](screenshots/05-grpc-success.png)
 
+### 2b. gRPC error status when the requested item is unavailable
+
+Inventory returns a gRPC status code instead of a normal response, and Order maps it to the matching HTTP status:
+
+```
+$ curl -i -X POST localhost:9000/orders -H "Content-Type: application/json" -d '{"item_id":"pen","quantity":1}'
+HTTP/1.1 409 CONFLICT
+{"error":"insufficient_stock","grpc_status":"FAILED_PRECONDITION",
+ "message":"insufficient stock for 'pen': requested 1, in stock 0",
+ "request_id":"8a763fc1-d1da-4daa-8d87-1ae049192e8d","status":"rejected"}
+
+$ curl -i -X POST localhost:9000/orders -H "Content-Type: application/json" -d '{"item_id":"laptop","quantity":1}'
+HTTP/1.1 404 NOT FOUND
+{"error":"item_not_found","grpc_status":"NOT_FOUND",
+ "message":"item 'laptop' not found",
+ "request_id":"7b3f709d-3a25-4bd1-8273-63c1fba12a4f","status":"rejected"}
+```
+
+![gRPC unavailable item](screenshots/08-grpc-unavailable-item.png)
+
 ---
 
 ## Failure handling: Inventory responds too slowly
